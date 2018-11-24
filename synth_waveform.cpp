@@ -318,6 +318,7 @@ void AudioSynthWaveformModulated::update(void)
 			}
 			break;
 		} // else fall through to orginary square without shape modulation
+		[[gnu::fallthrough]];
 
 	case WAVEFORM_SQUARE:
 		magnitude15 = signed_saturate_rshift(magnitude, 16, 1);
@@ -365,6 +366,7 @@ void AudioSynthWaveformModulated::update(void)
 			}
 			break;
 		} // else fall through to orginary triangle without shape modulation
+		[[gnu::fallthrough]];
 
 	case WAVEFORM_TRIANGLE:
 		for (i=0; i < AUDIO_BLOCK_SAMPLES; i++) {

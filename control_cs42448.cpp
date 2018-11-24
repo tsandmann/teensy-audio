@@ -106,19 +106,19 @@ bool AudioControlCS42448::volumeInteger(uint32_t n)
 	return write(CS42448_DAC_Channel_Mute, data, 9);
 }
 
-bool AudioControlCS42448::volumeInteger(int channel, uint32_t n)
+bool AudioControlCS42448::volumeInteger(int /*channel*/, uint32_t /*n*/)
 {
 
 	return true;
 }
 
-bool AudioControlCS42448::inputLevelInteger(int32_t n)
+bool AudioControlCS42448::inputLevelInteger(int32_t /*n*/)
 {
 
 	return true;
 }
 
-bool AudioControlCS42448::inputLevelInteger(int chnnel, int32_t n)
+bool AudioControlCS42448::inputLevelInteger(int /*chnnel*/, int32_t /*n*/)
 {
 
 	return true;

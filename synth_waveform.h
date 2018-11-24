@@ -109,7 +109,7 @@ public:
 		phase_offset = 0;
 		tone_type = t_type;
 	}
-	void arbitraryWaveform(const int16_t *data, float maxFreq) {
+	void arbitraryWaveform(const int16_t *data, float /*maxFreq*/) {
 		arbdata = data;
 	}
 	virtual void update(void);
@@ -169,7 +169,7 @@ public:
 		frequency(t_freq);
 		tone_type = t_type;
 	}
-	void arbitraryWaveform(const int16_t *data, float maxFreq) {
+	void arbitraryWaveform(const int16_t *data, float /*maxFreq*/) {
 		arbdata = data;
 	}
 	void frequencyModulation(float octaves) {

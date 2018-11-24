@@ -457,7 +457,7 @@ void AudioOutputADAT::isr(void)
 	}
 }
 
-void AudioOutputADAT::mute_PCM(const bool mute)
+void AudioOutputADAT::mute_PCM(const bool /*mute*/)
 {
 	//vucp = mute?VUCP_INVALID:VUCP_VALID;
 	//#TODO

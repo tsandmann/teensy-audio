@@ -38,8 +38,8 @@ public:
 	bool enable(void);
 	bool disable(void) { return false; }
 	bool volume(float n) { return volumeInteger(n * 127 + 0.499); }
-	bool inputLevel(float n) { return false; }
-	bool inputSelect(int n) { return false; }
+	bool inputLevel(float) { return false; }
+	bool inputSelect(int) { return false; }
 
 	bool volume(float left, float right);
 	bool dacVolume(float n) { return volumeInteger(n * 127 + 0.499); }

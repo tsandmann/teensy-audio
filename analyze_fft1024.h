@@ -78,7 +78,7 @@ public:
 		} while (binFirst <= binLast);
 		return (float)sum * (1.0 / 16384.0);
 	}
-	void averageTogether(uint8_t n) {
+	void averageTogether(uint8_t /*n*/) {
 		// not implemented yet (may never be, 86 Hz output rate is ok)
 	}
 	void windowFunction(const int16_t *w) {

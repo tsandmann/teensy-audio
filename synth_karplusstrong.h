@@ -50,7 +50,7 @@ public:
 		bufferIndex = 0;
 		state = 1;
 	}
-	void noteOff(float velocity) {
+	void noteOff(float /*velocity*/) {
 		state = 0;
 	}
 	virtual void update(void);
