@@ -1,6 +1,9 @@
-/* SPDIF for Teensy 3.X
- * Copyright (c) 2015, Frank Bösing, f.boesing@gmx.de,
- * Thanks to KPC & Paul Stoffregen!
+/* Audio Library for Teensy 3.X
+ * Copyright (c) 2016, Paul Stoffregen, paul@pjrc.com
+ *
+ * Development of this audio library was funded by PJRC.COM, LLC by sales of
+ * Teensy and Audio Adaptor boards.  Please support PJRC's efforts to develop
+ * open source software by purchasing Teensy or other PJRC products.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,37 +24,44 @@
  * THE SOFTWARE.
  */
 
-#ifndef output_SPDIF_h_
-#define output_SPDIF_h_
+//Frank Bösing, Ben-Rheinland
+
+#ifndef output_pt8211_2_h_
+#define output_pt8211_2_h_
+
+	//uncomment to enable oversampling:
+#define AUDIO_PT8211_OVERSAMPLING
+	//uncomment ONE of these to define interpolation type for oversampling:
+// #define AUDIO_PT8211_INTERPOLATION_LINEAR
+#define AUDIO_PT8211_INTERPOLATION_CIC
 
 #include "Arduino.h"
 #include "AudioStream.h"
 #include "DMAChannel.h"
 
-class AudioOutputSPDIF : public AudioStream
+class AudioOutputPT8211_2 : public AudioStream
 {
 public:
-	AudioOutputSPDIF(void) : AudioStream(2, inputQueueArray) { begin(); }
+	AudioOutputPT8211_2(void) : AudioStream(2, inputQueueArray) { begin(); }
 	virtual void update(void);
 	void begin(void);
-	//friend class AudioInputSPDIF;
-	static void mute_PCM(const bool mute);
 protected:
-	AudioOutputSPDIF(int): AudioStream(2, inputQueueArray) {}
-	static void config_SPDIF(void);
+	static void config_i2s(void);
 	static audio_block_t *block_left_1st;
 	static audio_block_t *block_right_1st;
 	static bool update_responsibility;
 	static DMAChannel dma;
-	static void isr(void);
+	static void isr(void)
+	#if defined(AUDIO_PT8211_OVERSAMPLING)
+		__attribute__((optimize("unroll-loops")))
+	#endif
+	;
 private:
-	static uint32_t vucp;
 	static audio_block_t *block_left_2nd;
 	static audio_block_t *block_right_2nd;
 	static uint16_t block_left_offset;
 	static uint16_t block_right_offset;
 	audio_block_t *inputQueueArray[2];
 };
-
 
 #endif
