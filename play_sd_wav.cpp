@@ -25,6 +25,7 @@
  */
 
 #include <Arduino.h>
+#include "Audio.h"
 #include "play_sd_wav.h"
 #include "spi_interrupt.h"
 
