@@ -40,13 +40,13 @@ uint16_t  AudioOutputPT8211_2::block_left_offset = 0;
 uint16_t  AudioOutputPT8211_2::block_right_offset = 0;
 bool AudioOutputPT8211_2::update_responsibility = false;
 #if defined(AUDIO_PT8211_OVERSAMPLING)
-	static uint32_t i2s_tx_buffer[AUDIO_BLOCK_SAMPLES*4];
+DMAMEM __attribute__((aligned(32))) static uint32_t i2s_tx_buffer[AUDIO_BLOCK_SAMPLES*4];
 #else
-	static uint32_t i2s_tx_buffer[AUDIO_BLOCK_SAMPLES];
+DMAMEM __attribute__((aligned(32))) static uint32_t i2s_tx_buffer[AUDIO_BLOCK_SAMPLES];
 #endif
 DMAChannel AudioOutputPT8211_2::dma(false);
 
-PROGMEM
+FLASHMEM
 void AudioOutputPT8211_2::begin(void)
 {
 	dma.begin(true); // Allocate the DMA channel first
@@ -378,7 +378,7 @@ void AudioOutputPT8211_2::update(void)
 	}
 }
 
-PROGMEM
+FLASHMEM
 void AudioOutputPT8211_2::config_i2s(void)
 {
 
