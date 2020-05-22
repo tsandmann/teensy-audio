@@ -37,6 +37,9 @@ void AudioPlaySdRaw::begin(void)
 	file_size = 0;
 }
 
+#ifndef IRQ_SDHC
+#define IRQ_SDHC IRQ_SDHC1
+#endif
 
 bool AudioPlaySdRaw::play(const char *filename)
 {
@@ -48,11 +51,7 @@ bool AudioPlaySdRaw::play(const char *filename)
 #endif
 	/* disable interrupts with lower priority than SDHC DMA */
 	const uint32_t last_pri { __get_BASEPRI() };
-	#if defined(__IMXRT1052__) || defined(__IMXRT1062__)
-	const uint8_t sdhc_pri { NVIC_GET_PRIORITY(IRQ_SDHC1) };
-	#else
 	const uint8_t sdhc_pri { NVIC_GET_PRIORITY(IRQ_SDHC) };
-	#endif
 	__set_BASEPRI((sdhc_pri / 16U + 1U) * 16U);
 	rawfile = SD.open(filename);
 	__set_BASEPRI(last_pri);
