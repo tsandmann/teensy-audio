@@ -362,7 +362,7 @@ static int analogReadADC1(uint8_t pin)
 
 #else
 
-void AudioInputAnalogStereo::init(uint8_t pin0, uint8_t pin1)
+void AudioInputAnalogStereo::init(uint8_t, uint8_t)
 {
 }
 
