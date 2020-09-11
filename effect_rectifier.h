@@ -1,5 +1,9 @@
-/* Hardware-SPDIF for Teensy 4
- * Copyright (c) 2019, Frank Bösing, f.boesing@gmx.de
+/* Audio Library for Teensy 3.X
+ * Copyright (c) 2014, Paul Stoffregen, paul@pjrc.com
+ *
+ * Development of this audio library was funded by PJRC.COM, LLC by sales of
+ * Teensy and Audio Adaptor boards.  Please support PJRC's efforts to develop
+ * open source software by purchasing Teensy or other PJRC products.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,38 +24,19 @@
  * THE SOFTWARE.
  */
 
-#ifndef output_SPDIF3_h_
-#define output_SPDIF3_h_
+#ifndef effect_rectifier_h_
+#define effect_rectifier_h_
 
-#include <Arduino.h>
-#include <AudioStream.h>
-#include <DMAChannel.h>
+#include "Arduino.h"
+#include "AudioStream.h"
 
-class AudioOutputSPDIF3 : public AudioStream
+class AudioEffectRectifier: public AudioStream
 {
 public:
-	AudioOutputSPDIF3(void) : AudioStream(2, inputQueueArray) { begin(); }
+	AudioEffectRectifier(void) : AudioStream(1, inputQueueArray) {}
 	virtual void update(void);
-	void begin(void);
-	friend class AudioInputSPDIF3;
-	friend class AsyncAudioInputSPDIF3;
-	static void mute_PCM(const bool mute);
-	static bool pll_locked(void);
-protected:
-	//AudioOutputSPDIF3(int dummy): AudioStream(2, inputQueueArray) {}
-	static void config_spdif3(void);
-	static audio_block_t *block_left_1st;
-	static audio_block_t *block_right_1st;
-	static bool update_responsibility;
-	static DMAChannel dma;
-	static void isr(void);	
 private:
-	static uint32_t dpll_Gain() __attribute__ ((const));
-	static audio_block_t *block_left_2nd;
-	static audio_block_t *block_right_2nd;
-	static audio_block_t block_silent;
-	audio_block_t *inputQueueArray[2];
+	audio_block_t *inputQueueArray[1];
 };
-
 
 #endif
