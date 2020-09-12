@@ -37,8 +37,10 @@ void AudioPlaySdRaw::begin(void)
 	file_size = 0;
 }
 
-#ifndef IRQ_SDHC
-#define IRQ_SDHC IRQ_SDHC1
+#ifdef HAS_KINETIS_SDHC
+static constexpr auto irq_sdhc { IRQ_SDHC };
+#elif defined __IMXRT1062__
+static constexpr auto irq_sdhc { IRQ_SDHC1 };
 #endif
 
 bool AudioPlaySdRaw::play(const char *filename)
@@ -49,12 +51,16 @@ bool AudioPlaySdRaw::play(const char *filename)
 #else
 	AudioStartUsingSPI();
 #endif
+#if defined HAS_KINETIS_SDHC || defined __IMXRT1062__
 	/* disable interrupts with lower priority than SDHC DMA */
 	const uint32_t last_pri { __get_BASEPRI() };
-	const uint8_t sdhc_pri { NVIC_GET_PRIORITY(IRQ_SDHC) };
+	const uint8_t sdhc_pri { NVIC_GET_PRIORITY(irq_sdhc) };
 	__set_BASEPRI((sdhc_pri / 16U + 1U) * 16U);
+#endif
 	rawfile = SD.open(filename);
+#if defined HAS_KINETIS_SDHC || defined __IMXRT1062__
 	__set_BASEPRI(last_pri);
+#endif
 	if (!rawfile) {
 		//Serial.println("unable to open file");
 		#if defined(HAS_KINETIS_SDHC)
