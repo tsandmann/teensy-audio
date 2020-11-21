@@ -25,9 +25,9 @@
  */
 
 #include <Arduino.h>
-#include "Audio.h"
 #include "play_sd_wav.h"
 #include "spi_interrupt.h"
+
 
 #define STATE_DIRECT_8BIT_MONO		0  // playing mono at native sample rate
 #define STATE_DIRECT_8BIT_STEREO	1  // playing stereo at native sample rate
@@ -59,36 +59,28 @@ void AudioPlaySdWav::begin(void)
 	}
 }
 
-#ifdef HAS_KINETIS_SDHC
-static constexpr auto irq_sdhc { IRQ_SDHC };
-#elif defined __IMXRT1062__
-static constexpr auto irq_sdhc { IRQ_SDHC1 };
-#endif
 
 bool AudioPlaySdWav::play(const char *filename)
 {
 	stop();
-#if defined(HAS_KINETIS_SDHC)	
+	bool irq = false;
+	if (NVIC_IS_ENABLED(IRQ_SOFTWARE)) {
+		NVIC_DISABLE_IRQ(IRQ_SOFTWARE);
+		irq = true;
+	}
+#if defined(HAS_KINETIS_SDHC)
 	if (!(SIM_SCGC3 & SIM_SCGC3_SDHC)) AudioStartUsingSPI();
-#else 	
+#else
 	AudioStartUsingSPI();
 #endif
-#if defined HAS_KINETIS_SDHC || defined __IMXRT1062__
-	/* disable interrupts with lower priority than SDHC DMA */
-	const uint32_t last_pri { __get_BASEPRI() };
-	const uint8_t sdhc_pri { NVIC_GET_PRIORITY(irq_sdhc) };
-	__set_BASEPRI((sdhc_pri / 16U + 1U) * 16U);
-#endif
 	wavfile = SD.open(filename);
-#if defined HAS_KINETIS_SDHC || defined __IMXRT1062__
-	__set_BASEPRI(last_pri);
-#endif
 	if (!wavfile) {
-	#if defined(HAS_KINETIS_SDHC)	
+	#if defined(HAS_KINETIS_SDHC)
 		if (!(SIM_SCGC3 & SIM_SCGC3_SDHC)) AudioStopUsingSPI();
-	#else 	
+	#else
 		AudioStopUsingSPI();
-	#endif			
+	#endif
+		if (irq) NVIC_ENABLE_IRQ(IRQ_SOFTWARE);
 		return false;
 	}
 	buffer_length = 0;
@@ -97,30 +89,33 @@ bool AudioPlaySdWav::play(const char *filename)
 	data_length = 20;
 	header_offset = 0;
 	state = STATE_PARSE1;
+	if (irq) NVIC_ENABLE_IRQ(IRQ_SOFTWARE);
 	return true;
 }
 
 void AudioPlaySdWav::stop(void)
 {
-	__disable_irq();
+	bool irq = false;
+	if (NVIC_IS_ENABLED(IRQ_SOFTWARE)) {
+		NVIC_DISABLE_IRQ(IRQ_SOFTWARE);
+		irq = true;
+	}
 	if (state != STATE_STOP) {
 		audio_block_t *b1 = block_left;
 		block_left = NULL;
 		audio_block_t *b2 = block_right;
 		block_right = NULL;
 		state = STATE_STOP;
-		__enable_irq();
 		if (b1) release(b1);
 		if (b2) release(b2);
 		wavfile.close();
-	#if defined(HAS_KINETIS_SDHC)	
+	#if defined(HAS_KINETIS_SDHC)
 		if (!(SIM_SCGC3 & SIM_SCGC3_SDHC)) AudioStopUsingSPI();
-	#else 	
+	#else
 		AudioStopUsingSPI();
-	#endif	
-	} else {
-		__enable_irq();
+	#endif
 	}
+	if (irq) NVIC_ENABLE_IRQ(IRQ_SOFTWARE);
 }
 
 
@@ -178,11 +173,11 @@ void AudioPlaySdWav::update(void)
 	}
 end:	// end of file reached or other reason to stop
 	wavfile.close();
-#if defined(HAS_KINETIS_SDHC)	
+#if defined(HAS_KINETIS_SDHC)
 	if (!(SIM_SCGC3 & SIM_SCGC3_SDHC)) AudioStopUsingSPI();
-#else 	
+#else
 	AudioStopUsingSPI();
-#endif	
+#endif
 	state_play = STATE_STOP;
 	state = STATE_STOP;
 cleanup:

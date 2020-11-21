@@ -37,7 +37,7 @@ public:
 	//friend class AudioInputSPDIF;
 	static void mute_PCM(const bool mute);
 protected:
-	AudioOutputSPDIF(int): AudioStream(2, inputQueueArray) {}
+	//AudioOutputSPDIF(int): AudioStream(2, inputQueueArray) {}
 	static void config_SPDIF(void);
 	static audio_block_t *block_left_1st;
 	static audio_block_t *block_right_1st;
