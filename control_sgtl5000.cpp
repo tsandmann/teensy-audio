@@ -33,7 +33,7 @@
 // 7:0  REVID		0x00 - revision number for SGTL5000.
 
 #define CHIP_DIG_POWER			0x0002
-// 6	ADC_POWERUP	1=Enable, 0=disable the ADC block, both digital & analog, 
+// 6	ADC_POWERUP	1=Enable, 0=disable the ADC block, both digital & analog,
 // 5	DAC_POWERUP	1=Enable, 0=disable the DAC block, both analog and digital
 // 4	DAP_POWERUP	1=Enable, 0=disable the DAP block
 // 1	I2S_OUT_POWERUP	1=Enable, 0=disable the I2S data output
@@ -531,7 +531,7 @@ bool AudioControlSGTL5000::enable(void)
 	delay(400);
 	write(CHIP_LINE_OUT_VOL, 0x1D1D); // default approx 1.3 volts peak-to-peak
 	write(CHIP_CLK_CTRL, 0x0004);  // 44.1 kHz, 256*Fs
-	write(CHIP_I2S_CTRL, 0x0130); // SCLK=32*Fs, 16bit, I2S format
+	write(CHIP_I2S_CTRL, 0x0030); // SCLK=64*Fs, 16bit, I2S format
 	// default signal routing is ok?
 	write(CHIP_SSS_CTRL, 0x0010); // ADC->I2S, I2S->DAC
 	write(CHIP_ADCDAC_CTRL, 0x0000); // disable dac mute
@@ -796,7 +796,7 @@ void AudioControlSGTL5000::eqFilter(uint8_t filterNum, int *filterParameters)
 {
 	// TODO: add the part that selects 7 PEQ filters.
 	if(semi_automated) automate(1,1,filterNum+1);
-	modify(DAP_FILTER_COEF_ACCESS,(uint16_t)filterNum,15); 
+	modify(DAP_FILTER_COEF_ACCESS,(uint16_t)filterNum,15);
 	write(DAP_COEF_WR_B0_MSB,(*filterParameters>>4)&65535);
 	write(DAP_COEF_WR_B0_LSB,(*filterParameters++)&15);
 	write(DAP_COEF_WR_B1_MSB,(*filterParameters>>4)&65535);
@@ -911,7 +911,7 @@ unsigned short AudioControlSGTL5000::dap_audio_eq_band(uint8_t bandNum, float n)
 	return modify(DAP_AUDIO_EQ_BASS_BAND0+(bandNum*2),(unsigned int)n,127);
 }
 
-void AudioControlSGTL5000::automate(uint8_t dap, uint8_t eq)
+void AudioControlSGTL5000::automate(uint8_t /*dap*/, uint8_t eq)
 {
 	//if((dap!=0)&&(!(read(DAP_CONTROL)&1))) audioProcessorEnable();
 	if((read(DAP_AUDIO_EQ)&3) != eq) eqSelect(eq);
@@ -1000,6 +1000,7 @@ void calcBiquad(uint8_t filtertype, float fC, float dB_Gain, float Q, uint32_t q
     a0 = (A+1.0F) - ((A-1.0F)*cosw) + (beta*sinw);
     a1 = -2.0F * ((A-1.0F) - ((A+1.0F)*cosw));
     a2 = -((A+1.0F) - ((A-1.0F)*cosw) - (beta*sinw));
+		break;
   default:
     b0 = 0.5;
     b1 = 0.0;

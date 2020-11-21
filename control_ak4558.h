@@ -242,8 +242,8 @@ public:
 	bool volume(float n);	//sets LOUT/ROUT volume to n (range 0.0 - 1.0)
 	bool volumeLeft(float n);	//sets LOUT volume to n (range 0.0 - 1.0)
 	bool volumeRight(float n);	//sets ROUT volume to n (range 0.0 - 1.0)
-	bool inputLevel(float n) { return false; }	//not supported by AK4558
-	bool inputSelect(int n) { return false; }	//sets inputs to mono left, mono right, stereo (default stereo), not yet implemented
+	bool inputLevel(float) { return false; }	//not supported by AK4558
+	bool inputSelect(int) { return false; }	//sets inputs to mono left, mono right, stereo (default stereo), not yet implemented
 private:
 	uint8_t registers[10];
 	void initConfig(void);

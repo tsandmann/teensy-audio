@@ -37,7 +37,7 @@ public:
 	bool enable(void);
 	bool disable(void) { return false; }
 	bool volume(float n) { return volumeInteger(n * 129 + 0.499); }
-	bool inputLevel(float n) {return false;}
+	bool inputLevel(float) {return false;}
 	bool muteHeadphone(void) { return write(0x0024, ana_ctrl | (1<<4)); }
 	bool unmuteHeadphone(void) { return write(0x0024, ana_ctrl & ~(1<<4)); }
 	bool muteLineout(void) { return write(0x0024, ana_ctrl | (1<<8)); }

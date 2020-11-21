@@ -221,7 +221,7 @@ void AudioSynthWaveformModulated::update(void)
 			n = n << 1;
 			#else
 			// exp2 algorithm by Laurent de Soras
-			// http://www.musicdsp.org/showone.php?id=106
+			// https://www.musicdsp.org/en/latest/Other/106-fast-exp2-approximation.html
 			n = (n + 134217728) << 3;
 			n = multiply_32x32_rshift32_rounded(n, n);
 			n = multiply_32x32_rshift32_rounded(n, 715827883) << 3;
@@ -318,6 +318,7 @@ void AudioSynthWaveformModulated::update(void)
 			}
 			break;
 		} // else fall through to orginary square without shape modulation
+		[[gnu::fallthrough]];
 
 	case WAVEFORM_SQUARE:
 		magnitude15 = signed_saturate_rshift(magnitude, 16, 1);
@@ -365,6 +366,7 @@ void AudioSynthWaveformModulated::update(void)
 			}
 			break;
 		} // else fall through to orginary triangle without shape modulation
+		[[gnu::fallthrough]];
 
 	case WAVEFORM_TRIANGLE:
 		for (i=0; i < AUDIO_BLOCK_SAMPLES; i++) {

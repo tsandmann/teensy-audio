@@ -118,10 +118,10 @@ void AudioEffectGranular::update(void)
 				}
 			}
 			if (sample_loaded) {
-				if (playpack_rate >= 0) {
+				/*if (playpack_rate >= 0) {*/
 					accumulator += playpack_rate;
 					read_head = accumulator >> 16;
-				}
+				/*}*/
 				if (read_head >= freeze_len) {
 					accumulator = 0;
 					read_head = 0;

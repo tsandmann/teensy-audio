@@ -36,7 +36,7 @@ public:
 	void begin(void);
 	static void mute_PCM(const bool mute);
 protected:
-	AudioOutputADAT(int dummy): AudioStream(8, inputQueueArray) {}
+	AudioOutputADAT(int): AudioStream(8, inputQueueArray) {}
 	static void config_ADAT(void);
 	static audio_block_t *block_ch1_1st;
 	static audio_block_t *block_ch2_1st;

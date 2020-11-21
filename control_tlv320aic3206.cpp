@@ -170,7 +170,7 @@ bool AudioControlTLV320AIC3206::disable(void) {
 }
 
 //dummy function to keep compatible with Teensy Audio Library
-bool AudioControlTLV320AIC3206::inputLevel(float volume) {
+bool AudioControlTLV320AIC3206::inputLevel(float /*volume*/) {
   return false;
 }
 

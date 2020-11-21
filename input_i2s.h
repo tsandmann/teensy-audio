@@ -37,8 +37,8 @@ public:
 	AudioInputI2S(void) : AudioStream(0, NULL) { begin(); }
 	virtual void update(void);
 	void begin(void);
-protected:	
-	AudioInputI2S(int dummy): AudioStream(0, NULL) {} // to be used only inside AudioInputI2Sslave !!
+protected:
+	AudioInputI2S(int): AudioStream(0, NULL) {} // to be used only inside AudioInputI2Sslave !!
 	static bool update_responsibility;
 	static DMAChannel dma;
 	static void isr(void);
