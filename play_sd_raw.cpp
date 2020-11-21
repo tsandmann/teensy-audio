@@ -25,7 +25,6 @@
  */
 
 #include <Arduino.h>
-#include "Audio.h"
 #include "play_sd_raw.h"
 #include "spi_interrupt.h"
 
@@ -37,30 +36,21 @@ void AudioPlaySdRaw::begin(void)
 	file_size = 0;
 }
 
-#ifdef HAS_KINETIS_SDHC
-static constexpr auto irq_sdhc { IRQ_SDHC };
-#elif defined __IMXRT1062__
-static constexpr auto irq_sdhc { IRQ_SDHC1 };
-#endif
 
 bool AudioPlaySdRaw::play(const char *filename)
 {
 	stop();
+	bool irq = false;
+	if (NVIC_IS_ENABLED(IRQ_SOFTWARE)) {
+		NVIC_DISABLE_IRQ(IRQ_SOFTWARE);
+		irq = true;
+	}
 #if defined(HAS_KINETIS_SDHC)
 	if (!(SIM_SCGC3 & SIM_SCGC3_SDHC)) AudioStartUsingSPI();
 #else
 	AudioStartUsingSPI();
 #endif
-#if defined HAS_KINETIS_SDHC || defined __IMXRT1062__
-	/* disable interrupts with lower priority than SDHC DMA */
-	const uint32_t last_pri { __get_BASEPRI() };
-	const uint8_t sdhc_pri { NVIC_GET_PRIORITY(irq_sdhc) };
-	__set_BASEPRI((sdhc_pri / 16U + 1U) * 16U);
-#endif
 	rawfile = SD.open(filename);
-#if defined HAS_KINETIS_SDHC || defined __IMXRT1062__
-	__set_BASEPRI(last_pri);
-#endif
 	if (!rawfile) {
 		//Serial.println("unable to open file");
 		#if defined(HAS_KINETIS_SDHC)
@@ -68,12 +58,14 @@ bool AudioPlaySdRaw::play(const char *filename)
 		#else
 			AudioStopUsingSPI();
 		#endif
+		if (irq) NVIC_ENABLE_IRQ(IRQ_SOFTWARE);
 		return false;
 	}
 	file_size = rawfile.size();
 	file_offset = 0;
 	//Serial.println("able to open file");
 	playing = true;
+	if (irq) NVIC_ENABLE_IRQ(IRQ_SOFTWARE);
 	return true;
 }
 
