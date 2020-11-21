@@ -75,11 +75,11 @@ bool AudioPlaySdWav::play(const char *filename)
 #endif
 	wavfile = SD.open(filename);
 	if (!wavfile) {
-	#if defined(HAS_KINETIS_SDHC)
+#if defined(HAS_KINETIS_SDHC)
 		if (!(SIM_SCGC3 & SIM_SCGC3_SDHC)) AudioStopUsingSPI();
-	#else
+#else
 		AudioStopUsingSPI();
-	#endif
+#endif
 		if (irq) NVIC_ENABLE_IRQ(IRQ_SOFTWARE);
 		return false;
 	}
@@ -109,11 +109,11 @@ void AudioPlaySdWav::stop(void)
 		if (b1) release(b1);
 		if (b2) release(b2);
 		wavfile.close();
-	#if defined(HAS_KINETIS_SDHC)
+#if defined(HAS_KINETIS_SDHC)
 		if (!(SIM_SCGC3 & SIM_SCGC3_SDHC)) AudioStopUsingSPI();
-	#else
+#else
 		AudioStopUsingSPI();
-	#endif
+#endif
 	}
 	if (irq) NVIC_ENABLE_IRQ(IRQ_SOFTWARE);
 }
